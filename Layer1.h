@@ -16,6 +16,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <time.h>
+#include <string>
+#include <string.h>
+
 
 #ifndef CS342_PROJECT_LAYER1_H
 #define CS342_PROJECT_LAYER1_H
@@ -48,11 +51,11 @@ struct inode_struct{
 // https://www.nongnu.org/ext2-doc/ext2.html#SUPERBLOCK
 class superblock{ // structure represeting the filesystem
 public:
-    void *memory_location;
+//    void *memory_location;
     int total_blocks; // total number of blocks
     int data_blocks; // total number of data blocks
     int inode_blocks; // total number of inode blocks
-    int no_of_inodes;
+    int number_of_inodes;
     int inode_per_block;
     int free_data_blocks; // free data blocks
     int free_inode_blocks; // free inodes blocks
@@ -61,6 +64,19 @@ public:
     int data_bitmap_block;
     int inode_bitmap_block;
     int inode_size;
+
+    /**
+     * Default superblock
+     * Contains
+     * 64 Block
+     * Inode first : 3, 5 Blocks
+     * Data first : 8 , 56 Blocks
+     * Inode Bitamp : 1
+     * Data Bitmap : 2
+     *
+     */
+    superblock(void*);
+    superblock(void*,int tb,int db,int ib,int fdb,int fib,int dbd,int ibd);
     /**
      * This function will be used to init the filesystem , superblock will reside block0
      * all the approaprate entries will be updated accordinlglgt
@@ -75,10 +91,52 @@ public:
      * initialize the free inode list
      * intiliase the data bitmaps and inode bitmaps
      */
-    void init_superblock(int tb,int db,int ib,int fdb,int fib,int dbd,int ibd);
+
+    void init_superblock(void * memory_location, int tb,int db,int ib,int fdb,int fib,int dbd,int ibd);
+
+//    string _repr(){
+//        string S = "Total Block " + n
+//    }
+    void _repr(){
+        printf("Total Blocks : %d\nData Blocks : %d\n"
+                       "Inode Blocks : %d\n"
+                       "First Data Block : %d\n"
+                       "First Inode Block : %d\n"
+                       "Free Data Block : %d\n"
+                       "Free Inode Block : %d\n",total_blocks,data_blocks,inode_blocks,first_data_block,first_inode_block,free_data_blocks,free_inode_blocks);
+    }
+
 
 
 
 
 };
+/*
+class inode_manager{
+    superblock sb; // the superblock to manage
+
+};
+*/
+
+
+void* make_fs(void *);
+void* make_fs(void *, int,int,int,int,int,int,int);
+
+/**
+ * Returns the inode using the indoe number
+ * Assuming that the system call check the bitmap for free inode
+ * @param inode_number  : the inode number to get
+ * @return returns the strcutere of inode
+ */
+
+inode_struct inode_read(void *memory_location, int inode_number);
+
+/**
+ * Used to write the inode_struct to the specifide memory location
+ * @param inode : The inode to be written
+ * We will use the inode_number to get the block and write
+ */
+
+void inode_write(void *memory_location, inode_struct inode);
+
 #endif //CS342_PROJECT_LAYER1_H

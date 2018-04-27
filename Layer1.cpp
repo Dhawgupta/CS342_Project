@@ -15,9 +15,21 @@
 #include "Layer1.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
+#include <stdint.h>
+#include <string.h>
+using namespace std;
 
 
-void superblock::init_superblock(int tb, int db, int ib, int fdb, int fib, int dbd, int ibd) {
+superblock::superblock(void * memory_location){
+    this->init_superblock(memory_location,64,56,5,8, 3, 2,1);
+}
+
+superblock::superblock(void *memory_location, int tb, int db, int ib, int fdb, int fib, int dbd, int ibd) {
+    this->init_superblock(memory_location,  tb,  db,  ib,  fdb, fib,  dbd, ibd);
+
+}
+void superblock::init_superblock(void *memory_location,int tb, int db, int ib, int fdb, int fib, int dbd, int ibd) {
     total_blocks = tb;
     data_blocks = db;
     inode_blocks = ib;
@@ -28,7 +40,7 @@ void superblock::init_superblock(int tb, int db, int ib, int fdb, int fib, int d
     data_bitmap_block = dbd;
     inode_bitmap_block = ibd;
     inode_size = sizeof(inode_struct);
-    memory_location = allocate_memory_block(total_blocks);
+//    memory_location = allocate_memory_block(total_blocks);
     number_of_inodes = (inode_blocks*BLOCK_SIZE)/inode_size;
     inode_per_block = BLOCK_SIZE/inode_size;
 
@@ -48,16 +60,62 @@ void superblock::init_superblock(int tb, int db, int ib, int fdb, int fib, int d
         write_block(memory_location,first_inode_block + i, inode_this_block);
 
     }
+    // init the bytemap for inode as all free
+//    uint8_t temp_block = (uint8_t *)malloc(BLOCK_SIZE);
+    // the bitmap of each is one size
+    uint8_t *temp_block = (uint8_t *)malloc(BLOCK_SIZE); // we will make the inode bitmap on this and then write it to the inode block
+    for(int i=0;i<number_of_inodes;i++){ // for each inode init the bitmap
+        temp_block[i] = 0; // assign each inode a value 0 in byte amp
 
-    // init the bitmap for inode as all free
-    
+    }
+    write_block(memory_location, first_inode_block, temp_block);
+    free(temp_block); // deallocate the memory
+    // init the data bitmap
+    temp_block = (uint8_t *)malloc(BLOCK_SIZE);
+    for(int i=0;i<data_blocks;i++){
+        temp_block[i] = 0; // assign each block as free
+    }
+    write_block(memory_location, first_data_block, temp_block);
+    free(temp_block);
 
 
-    // init the memory
+    // write the superblock to the memory
+    void * temp_block1 = malloc(BLOCK_SIZE);
+    memcpy(temp_block1, this, sizeof(superblock));
+    // write the temp block to 0 th block of storage
+    write_block(memory_location,0, temp_block1);
+    free(temp_block1);
 
 
 }
 
+
+void* make_fs(void *memory_location){
+    superblock sp(memory_location);
+    return memory_location;
+}
+
+
+void* make_fs(void *memory_location,int tb,int db,int ib,int fdb,int fib,int dbd,int ibd){
+    superblock sp(memory_location, tb,db,ib,fdb,fib,dba,ibd);
+    return memory_location;
+
+}
+
+inode_struct inode_read(void*memory_location,int node_number){
+    // assume the system call knows what it is doing
+    // get the superblock for information
+    void *temp_block = malloc(BLOCK_SIZE);
+    read_block(memory_location, 0, temp_block);
+    superblock *sp = (superblock*)malloc(sizeof(superblock));
+    memcpy(sp, temp_block,sizeof(superblock));
+
+
+    // get the block number
+
+    int block_number = (node_number*sizeof(inode_struct))/BLOCK_SIZE + sp->first_inode_block;
+
+}
 
 
 /*
