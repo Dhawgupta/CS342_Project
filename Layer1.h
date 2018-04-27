@@ -48,9 +48,12 @@ struct inode_struct{
 // https://www.nongnu.org/ext2-doc/ext2.html#SUPERBLOCK
 class superblock{ // structure represeting the filesystem
 public:
+    void *memory_location;
     int total_blocks; // total number of blocks
     int data_blocks; // total number of data blocks
     int inode_blocks; // total number of inode blocks
+    int no_of_inodes;
+    int inode_per_block;
     int free_data_blocks; // free data blocks
     int free_inode_blocks; // free inodes blocks
     int first_data_block; // first data block number
@@ -69,9 +72,10 @@ public:
      * @param5 first_inode_block
      * @param6 data_bitmap_block
      * @param7 inode_bitmap_block
+     * initialize the free inode list
+     * intiliase the data bitmaps and inode bitmaps
      */
     void init_superblock(int tb,int db,int ib,int fdb,int fib,int dbd,int ibd);
-
 
 
 
