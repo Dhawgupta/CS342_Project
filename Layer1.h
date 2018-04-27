@@ -69,12 +69,33 @@ struct inode_struct{
 
 }; // currently each inode is 128 Bytes
 
+
+//superblock will start at 0 th blcok
+// https://www.nongnu.org/ext2-doc/ext2.html#SUPERBLOCK
 struct superblock{ // structure represeting the filesystem
-    int no_blocks; // total number of blocks
+    int total_blocks; // total number of blocks
     int data_blocks; // total number of data blocks
     int inode_blocks; // total number of inode blocks
-    int
-
+    int free_data_blocks; // free data blocks
+    int free_inode_blocks; // free inodes blocks
+    int first_data_block; // first data block number
+    int first_inode_block; // first inode block
+    int data_bitmap_block;
+    int inode_bitmap_block;
+    int inode_size;
+    /**
+     * This function will be used to init the filesystem , superblock will reside block0
+     * all the approaprate entries will be updated accordinlglgt
+     *
+     * @param1 total_blocks
+     * @param2 data_block
+     * @param3 inode_block
+     * @param4 first_data_block
+     * @param5 first_inode_block
+     * @param6 data_bitmap_block
+     * @param7 inode_bitmap_block
+     */
+    void (*init_superblock)(int,int,int,int,int,int)
 };
 
 
