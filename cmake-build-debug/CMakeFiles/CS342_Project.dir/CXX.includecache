@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/dawg/Documents/Semester6/CS342/CS342_Project/Layer0.h
+
+/home/dawg/Documents/Semester6/CS342/CS342_Project/Layer1.h
+sys/types.h
+-
+sys/stat.h
+-
+unistd.h
+-
+
+/home/dawg/Documents/Semester6/CS342/CS342_Project/main.cpp
+iostream
+-
+Layer0.h
+/home/dawg/Documents/Semester6/CS342/CS342_Project/Layer0.h
+Layer1.h
+/home/dawg/Documents/Semester6/CS342/CS342_Project/Layer1.h
+
