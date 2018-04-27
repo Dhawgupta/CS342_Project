@@ -24,30 +24,6 @@
 #endif
 #define INODE_SIZE 256 // from the wisc docuemntation we are taking the inodes size as this
 
-//struct stat {
-//    dev_t     st_dev;         /* ID of device containing file */
-//    ino_t     st_ino;         /* inode number */
-//    mode_t    st_mode;        /* protection */
-//    nlink_t   st_nlink;       /* number of hard links */
-//    uid_t     st_uid;         /* user ID of owner */
-//    gid_t     st_gid;         /* group ID of owner */
-//    dev_t     st_rdev;        /* device ID (if special file) */
-//    off_t     st_size;        /* total size, in bytes */
-//    blksize_t st_blksize;     /* blocksize for filesystem I/O */
-//    blkcnt_t  st_blocks;      /* number of 512B blocks allocated */
-//
-//    /* Since Linux 2.6, the kernel supports nanosecond
-//       precision for the following timestamp fields.
-//       For the details before Linux 2.6, see NOTES. */
-//
-//    struct timespec st_atim;  /* time of last access */
-//    struct timespec st_mtim;  /* time of last modification */
-//    struct timespec st_ctim;  /* time of last status change */
-//
-//#define st_atime st_atim.tv_sec      /* Backward compatibility */
-//#define st_mtime st_mtim.tv_sec
-//#define st_ctime st_ctim.tv_sec
-//};
 
 struct inode_struct{
     int inode;
@@ -68,11 +44,10 @@ struct inode_struct{
     time_t written;
 
 }; // currently each inode is 128 Bytes
-
-
 //superblock will start at 0 th blcok
 // https://www.nongnu.org/ext2-doc/ext2.html#SUPERBLOCK
-struct superblock{ // structure represeting the filesystem
+class superblock{ // structure represeting the filesystem
+public:
     int total_blocks; // total number of blocks
     int data_blocks; // total number of data blocks
     int inode_blocks; // total number of inode blocks
@@ -95,10 +70,11 @@ struct superblock{ // structure represeting the filesystem
      * @param6 data_bitmap_block
      * @param7 inode_bitmap_block
      */
-    void (*init_superblock)(int,int,int,int,int,int)
+    void init_superblock(int tb,int db,int ib,int fdb,int fib,int dbd,int ibd);
+
+
+
+
+
 };
-
-
-
-
 #endif //CS342_PROJECT_LAYER1_H
