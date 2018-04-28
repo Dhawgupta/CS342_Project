@@ -12,13 +12,13 @@ void* allocate_memory_size(int size_in_bytes){
 //    int size = size_in_bytes;
     void *memory = (void*)malloc(size_in_bytes);
     return memory;
-
-
 }
+
 void* allocate_memory_block(int number_of_blocks){
     void *memory = (void *)malloc(BLOCK_SIZE*number_of_blocks);
     return memory;
 }
+
 int read_block(void* memory,int block,void * buf){
     void *block_location = (void *)((char *)memory + block*BLOCK_SIZE);
     void *newbuf = memcpy(buf,block_location,BLOCK_SIZE); // copy one block worth of memory from the destined location

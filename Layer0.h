@@ -4,8 +4,8 @@
 /**
  * Header File for Layer 0
  * This will act as an interface which seems as if we are reading and writing onto a secondary storage
- * 1. Allocate Memory : This funciton will be used to allocate memrory
- * 2. There will be two interafces to our secondary memory
+ * 1. Allocate Memory : This function will be used to allocate memory
+ * 2. There will be two interfaces to our secondary memory
  *      2.1 Read(block)
  *      2.2 Write(Block)
  */

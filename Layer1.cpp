@@ -87,8 +87,8 @@ void superblock::init_superblock(void *memory_location,int tb, int db, int ib, i
 
     for(int i=0;i<number_of_inodes;i++){ // for each inode init the bitmap
         temp_block[i] = 0; // assign each inode a value 0 in false in bool
-
     }
+
     write_block(memory_location, first_inode_block, temp_block);
     free(temp_block); // deallocate the memory
     // init the data bitmap
@@ -98,16 +98,12 @@ void superblock::init_superblock(void *memory_location,int tb, int db, int ib, i
     }
     write_block(memory_location, first_data_block, temp_block);
     free(temp_block);
-
-
     // write the superblock to the memory
     void * temp_block1 = malloc(BLOCK_SIZE);
     memcpy(temp_block1, this, sizeof(superblock));
     // write the temp block to 0 th block of storage
     write_block(memory_location,0, temp_block1);
     free(temp_block1);
-
-
 }
 
 
