@@ -97,26 +97,24 @@ public:
 //    string _repr(){
 //        string S = "Total Block " + n
 //    }
-    void _repr(){
-        printf("Total Blocks : %d\nData Blocks : %d\n"
-                       "Inode Blocks : %d\n"
-                       "First Data Block : %d\n"
-                       "First Inode Block : %d\n"
-                       "Free Data Block : %d\n"
-                       "Free Inode Block : %d\n",total_blocks,data_blocks,inode_blocks,first_data_block,first_inode_block,free_data_blocks,free_inode_blocks);
-    }
+    void _repr();
+    /**
+     * This function will be used to read an exisitng fs for its superblock
+     * @return  return the superblock
+     */
+    static superblock read_superblock_fs(void *memory_location);
 
-
+    /**
+     * Used to write a superblock back to the fs of memory_location
+     * @param memory_location The fs memoryLocation
+     * @param sblock : The superblock to be written at 0 of memory block
+     * @return
+     */
+    static void write_superblock_fs(void *memory_location,superblock sBlock);
 
 
 
 };
-/*
-class inode_manager{
-    superblock sb; // the superblock to manage
-
-};
-*/
 
 
 void* make_fs(void *);

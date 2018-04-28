@@ -20,7 +20,22 @@
 #include <string.h>
 using namespace std;
 
-
+superblock superblock::read_superblock_fs(void * memory_location){
+    void *temp_block = malloc(BLOCK_SIZE);
+    read_block(memory_location, 0, temp_block);
+    superblock *sp = (superblock*)malloc(sizeof(superblock));
+    memcpy(sp, temp_block,sizeof(superblock));
+    return *sp;
+}
+void superblock::write_superblock_fs(void *memory_location, superblock sBlock) {
+    void *temp_block = malloc(BLOCK_SIZE);
+    // writing the current sBlock to temp blcok
+    memcpy(temp_block,&sBlock,sizeof(superblock));
+    // write temp block to dsik
+    // assuming superblock always on the 0th memory location
+    write_block(memory_location, 0, temp_block);
+    return;
+}
 superblock::superblock(void * memory_location){
     this->init_superblock(memory_location,64,56,5,8, 3, 2,1);
 }
@@ -28,6 +43,15 @@ superblock::superblock(void * memory_location){
 superblock::superblock(void *memory_location, int tb, int db, int ib, int fdb, int fib, int dbd, int ibd) {
     this->init_superblock(memory_location,  tb,  db,  ib,  fdb, fib,  dbd, ibd);
 
+}
+
+void superblock::_repr(){
+    printf("\nThe current SuperBlock is as follow : \nTotal Blocks : %d\nData Blocks : %d\n"
+                   "Inode Blocks : %d\n"
+                   "First Data Block : %d\n"
+                   "First Inode Block : %d\n"
+                   "Free Data Block : %d\n"
+                   "Free Inode Block : %d\n",total_blocks,data_blocks,inode_blocks,first_data_block,first_inode_block,free_data_blocks,free_inode_blocks);
 }
 void superblock::init_superblock(void *memory_location,int tb, int db, int ib, int fdb, int fib, int dbd, int ibd) {
     total_blocks = tb;
@@ -97,7 +121,7 @@ void* make_fs(void *memory_location){
 
 
 void* make_fs(void *memory_location,int tb,int db,int ib,int fdb,int fib,int dbd,int ibd){
-    superblock sp(memory_location, tb,db,ib,fdb,fib,dba,ibd);
+    superblock sp(memory_location, tb,db,ib,fdb,fib,dbd,ibd);
     return memory_location;
 
 }

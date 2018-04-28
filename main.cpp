@@ -1,7 +1,7 @@
 #include <string.h>
 //#include <stdio.h>
 #include <iostream>
-//#include <stdlib.h>
+#include <stdlib.h>
 #include "Layer0.h"
 #include "Layer1.h"
 
@@ -20,9 +20,15 @@ int main() {
     superblock s(mm); // init the superblock;
     s._repr();
     void *temp_block = malloc(BLOCK_SIZE);
+    cout<<endl<<"Showing the read superblock " <<endl;
     read_block(mm, 0, temp_block);
     superblock *sp = (superblock*)malloc(sizeof(superblock));
     memcpy(sp, temp_block,sizeof(superblock));
-    s._repr();
+    sp->_repr();
+
+    sp->total_blocks = 100;
+    superblock::write_superblock_fs(mm, *sp);
+    superblock sp2 = superblock::read_superblock_fs(mm);
+    sp2._repr();
     return 0;
 }
