@@ -38,7 +38,7 @@ struct inode_struct{
     int gid;
     int size; // the size of files in byte
     int blocks; // the number of blocks the file uses
-    void *direct_p[5]; // 12 direct pointers for memory
+    void *direct_p[5]; // 5 direct pointers for memory
     void *first_p; // one indirect pointe
     void *second_p;
     void *three_p;
