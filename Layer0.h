@@ -25,7 +25,14 @@ void* allocate_memory_block(int); // allocate the memory in terms of Block Size
      * 3. Memory to which the block has to be read
      * 4, return type is 0 if success -1 if failure
      */
-int read_block(void*,int,void *); // read the specidifed block number to the specifed buffer
+/**
+ * Read the Secondary memory block to specifed dest
+ * @params src : The src secondary block first mem location
+ * @param block : The block  number to be read
+ * @param dest : The block data to be read at
+ * @return returns the error code
+ */
+int read_block(void* src,int block,void * dest); // read the specidifed block number to the specifed buffer
 /** Write a Block
      *
      * 1. Write from this starting point of memory

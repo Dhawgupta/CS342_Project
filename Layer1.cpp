@@ -126,30 +126,54 @@ void* make_fs(void *memory_location,int tb,int db,int ib,int fdb,int fib,int dbd
 
 }
 
-inode_struct inode_read(void*memory_location,int node_number){
+inode_struct inode_manager::inode_read(void*memory_location,int node_number){
     // assume the system call knows what it is doing
     // get the superblock for information
-    void *temp_block = malloc(BLOCK_SIZE);
-    read_block(memory_location, 0, temp_block);
-    superblock *sp = (superblock*)malloc(sizeof(superblock));
-    memcpy(sp, temp_block,sizeof(superblock));
+    superblock sb = superblock::read_superblock_fs(memory_location);
 
 
     // get the block number
 
-    int block_number = (node_number*sizeof(inode_struct))/BLOCK_SIZE + sp->first_inode_block;
+    int relative_block_number = ((node_number*sizeof(inode_struct))/BLOCK_SIZE) ;
+    int block_number = relative_block_number + sb.first_inode_block;
+    // block number contans the block number contanin the inode node_number
+    inode_struct *temp_block = (inode_struct *)malloc(BLOCK_SIZE);
+    read_block(memory_location, block_number, temp_block);
+
+    // the relative block on current block
+    int relative_inode_on_block = node_number - relative_block_number*sb.inode_per_block;
+
+    inode_struct inode = temp_block[relative_inode_on_block];
+
+    return inode;
+
 
 }
 
+void inode_manager::inode_write(void *memory_location, inode_struct inode) {
+    // @todo : Assuming that the system call calling the function will modiyfing the necessary section like the bitmap and data blocks
+    // reading the superblock
+    superblock sb = superblock::read_superblock_fs(memory_location);
 
-/*
-int main(int argc, char *argv[]){
-    printf("Size of Different Data Types : \nInt : %d\nFloat : %d\nChar : %d\nPtr : %d",sizeof(int), sizeof(float), sizeof(long), sizeof(int *));
-    int blocks = 64;
-    void  *memory = allocate_memory_block(blocks);
-//    printf("",memory);
+    // calculate the block for inode
+    int node_number = inode.inode; // the inode number
+    int relative_block_number = ((node_number*sizeof(inode_struct))/BLOCK_SIZE) ;
+    int block_number = relative_block_number + sb.first_inode_block;
+
+    // the relative block on current block
+    int relative_inode_on_block = node_number - relative_block_number*sb.inode_per_block;
+
+    // read the whole block
+    inode_struct *temp_block = (inode_struct *)malloc(BLOCK_SIZE);
+    read_block(memory_location, block_number, temp_block);
+
+    // change the item on block
+    temp_block[relative_block_number] = inode;
 
 
+    // write the changed block back to memory
+    write_block(memory_location, block_number, temp_block);
+
+    return ;
 }
- */
 

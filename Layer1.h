@@ -120,6 +120,8 @@ public:
 void* make_fs(void *);
 void* make_fs(void *, int,int,int,int,int,int,int);
 
+class inode_manager {
+public:
 /**
  * Returns the inode using the indoe number
  * Assuming that the system call check the bitmap for free inode
@@ -127,7 +129,7 @@ void* make_fs(void *, int,int,int,int,int,int,int);
  * @return returns the strcutere of inode
  */
 
-inode_struct inode_read(void *memory_location, int inode_number);
+   static inode_struct inode_read(void *memory_location, int inode_number);
 
 /**
  * Used to write the inode_struct to the specifide memory location
@@ -135,6 +137,6 @@ inode_struct inode_read(void *memory_location, int inode_number);
  * We will use the inode_number to get the block and write
  */
 
-void inode_write(void *memory_location, inode_struct inode);
-
+   static void inode_write(void *memory_location, inode_struct inode);
+};
 #endif //CS342_PROJECT_LAYER1_H
