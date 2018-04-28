@@ -7,10 +7,6 @@
 //
 // strucutre largely inspired from  : http://pages.cs.wisc.edu/~remzi/OSTEP/file-implementation.pdf
 //#include <iostream>
-
-
-
-
 #include "Layer0.h"
 #include "Layer1.h"
 #include <stdlib.h>
@@ -85,17 +81,18 @@ void superblock::init_superblock(void *memory_location,int tb, int db, int ib, i
 
     }
     // init the bytemap for inode as all free
-//    uint8_t temp_block = (uint8_t *)malloc(BLOCK_SIZE);
     // the bitmap of each is one size
-    uint8_t *temp_block = (uint8_t *)malloc(BLOCK_SIZE); // we will make the inode bitmap on this and then write it to the inode block
+//    uint8_t *temp_block = (uint8_t *)malloc(BLOCK_SIZE); // we will make the inode bitmap on this and then write it to the inode block
+    bool *temp_block = (bool *)malloc(BLOCK_SIZE); // we will make the inode bitmap on this and then write it to the inode block
+
     for(int i=0;i<number_of_inodes;i++){ // for each inode init the bitmap
-        temp_block[i] = 0; // assign each inode a value 0 in byte amp
+        temp_block[i] = 0; // assign each inode a value 0 in false in bool
 
     }
     write_block(memory_location, first_inode_block, temp_block);
     free(temp_block); // deallocate the memory
     // init the data bitmap
-    temp_block = (uint8_t *)malloc(BLOCK_SIZE);
+    temp_block = (bool *)malloc(BLOCK_SIZE);
     for(int i=0;i<data_blocks;i++){
         temp_block[i] = 0; // assign each block as free
     }
@@ -177,3 +174,63 @@ void inode_manager::inode_write(void *memory_location, inode_struct inode) {
     return ;
 }
 
+bool* bitmap_manager::read_inode_bitmap(void *memory_location) {
+    // read the superblock
+    superblock sb = superblock::read_superblock_fs(memory_location);
+
+    // assign a memory for bitmap
+    bool* temp_block = (bool*)malloc(BLOCK_SIZE);
+    read_block(memory_location, sb.first_inode_block,temp_block);
+
+    // return the bitmap pointer
+    return temp_block;
+
+}
+bool* bitmap_manager::read_data_bitmap(void *memory_location) {
+    // read the superblock
+    superblock sb = superblock::read_superblock_fs(memory_location);
+
+    // assign a memory for bitmap
+    bool* temp_block = (bool*)malloc(BLOCK_SIZE);
+    read_block(memory_location, sb.first_data_block,temp_block);
+
+    // return the bitmap pointer
+    return temp_block;
+
+}
+void bitmap_manager::write_inode_bitmap(void *memory_location, bool *bitmap) {
+    // read superblock
+    superblock sb = superblock::read_superblock_fs(memory_location);
+
+    // we will correct the memory size mismatch
+    bool* temp_block = (bool *)malloc(BLOCK_SIZE);
+    memcpy(temp_block, bitmap, sb.number_of_inodes);
+
+    // wrote it to temp_block
+    // write the block to scondary storage
+    write_block(memory_location,sb.first_inode_block,temp_block);
+
+    free(temp_block);
+
+    return ;
+
+}
+
+void bitmap_manager::write_data_bitmap(void *memory_location, bool *bitmap) {
+    // read superblock
+    superblock sb = superblock::read_superblock_fs(memory_location);
+
+    // we will correct the memory size mismatch
+    bool* temp_block = (bool *)malloc(BLOCK_SIZE);
+    memcpy(temp_block, bitmap, sb.data_blocks);
+
+
+    // wrote it to temp_block
+    // write the block to scondary storage
+    write_block(memory_location,sb.first_data_block,temp_block);
+
+    free(temp_block);
+
+    return ;
+
+}

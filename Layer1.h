@@ -55,7 +55,7 @@ public:
     int total_blocks; // total number of blocks
     int data_blocks; // total number of data blocks
     int inode_blocks; // total number of inode blocks
-    int number_of_inodes;
+    int number_of_inodes; // number of Inodes
     int inode_per_block;
     int free_data_blocks; // free data blocks
     int free_inode_blocks; // free inodes blocks
@@ -138,5 +138,35 @@ public:
  */
 
    static void inode_write(void *memory_location, inode_struct inode);
+};
+
+class bitmap_manager{
+public:
+    /**
+     * Used the bitmap containg the inode information
+     * @param memory_location : The fs location
+     * @return return a pointer containg the bitmaps
+     */
+    static bool* read_inode_bitmap(void *memory_location);
+    /**
+     * Used the bitmap containg the data information
+     * @param memory_location : The fs location
+     * @return return a pointer containg the bitmaps
+     */
+    static bool* read_data_bitmap(void *memory_location);
+    /**
+     * Write the bitmap back to the required memory location
+     * @param memory_location : The fs
+     * @param bitmap : The updated bitmap
+     */
+    static void write_inode_bitmap(void *memory_location, bool *bitmap);
+    /**
+     * Write the data bitmap
+     * @param memory_location : The fs
+     * @param bitmap : The bitmap written
+     */
+    static void write_data_bitmap(void *memory_location, bool *bitmap);
+
+
 };
 #endif //CS342_PROJECT_LAYER1_H
