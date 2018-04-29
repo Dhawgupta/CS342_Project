@@ -15,4 +15,5 @@
 
 int createfile(void *memory_location,std::string name);
 inode_struct fileopen(void *memory_location,int index_id);
+void delete_file(void *memory_location,int index_id);
 #endif

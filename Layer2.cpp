@@ -26,11 +26,15 @@ int createfile(void *memory_location,string name){
 			break;
 		}
 	}
-	if(index_id==-1 || data_id==-1)
+	if(index_id==-1 || data_id==-1 || !sb.free_data_blocks)
 		return -1;
 	dbitmap[data_id]=1;
 	ibitmap[index_id]=1;
-	offset=sb.data_bitmap_block+1;
+	bitmap_manager::write_inode_bitmap(memory_location,ibitmap);
+	bitmap_manager::write_data_bitmap(memory_location,dbitmap);
+	sb.free_data_blocks--;
+	superblock::write_superblock_fs(memory_location,sb);
+	offset=sb.data_bitmap_block+1+sb.inode_blocks;
 	inode_struct iblock=inode_manager::inode_read(memory_location,index_id);
 	iblock.inode=index_id;
 	iblock.file_type=0;
@@ -45,8 +49,28 @@ int createfile(void *memory_location,string name){
 	inode_manager::inode_write(memory_location,iblock);
 	return index_id;
 }
+
 inode_struct fileopen(void *memory_location,int index_id){	
 	inode_struct iblock=inode_manager::inode_read(memory_location,index_id);
 	inode_struct* iblock_pointer=&iblock;
 	return iblock;
+}
+
+void delete_file(void *memory_location,int index_id){
+	inode_struct node=inode_manager::inode_read(memory_location,index_id);
+	superblock sb = superblock::read_superblock_fs(memory_location);
+	int offset=sb.inode_bitmap_block;
+	bool *ibitmap = bitmap_manager::read_inode_bitmap((void*)((char *)memory_location+offset*BLOCK_SIZE));
+	offset=sb.data_bitmap_block;
+	bool *dbitmap=bitmap_manager::read_data_bitmap((void*)((char *)memory_location+offset*BLOCK_SIZE));
+	ibitmap[node.inode]=0;
+	for(int i=0;i<5;i++){
+		if(node.direct_p[i]==NULL)break;
+		offset=((char *)node.direct_p[i])-((char *)memory_location);
+		dbitmap[offset]=0;
+	}
+	sb.free_data_blocks++;
+	bitmap_manager::write_inode_bitmap(memory_location,ibitmap);
+	bitmap_manager::write_data_bitmap(memory_location,dbitmap);
+	superblock::write_superblock_fs(memory_location,sb);
 }

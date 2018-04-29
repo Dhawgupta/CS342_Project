@@ -15,7 +15,7 @@ using namespace std;
 string s[10],line;
 map<string,int> mp,instr;
 inode_struct v[100],node;
-bool mark[100];
+bool mark[100],data[100];
 /*************************************************/
 void print(){
 	cout<<"Inode Details :-\n";
@@ -40,8 +40,12 @@ int main(int argc, char const *argv[]){
 	instr["create"]=1;
 	instr["open"]=2;
 	instr["close"]=3;
-	instr["write"]=4;
-	instr["exit"]=5;
+	instr["append"]=4;
+	instr["read"]=5;
+	instr["write"]=6;
+	instr["viewInode"]=7;
+	instr["delete"]=8;
+	instr["exit"]=9;
 	void* mm = allocate_memory_block(64);
 	superblock sb(mm);
 	while(1){
@@ -58,7 +62,7 @@ int main(int argc, char const *argv[]){
 		cout<<endl;
 		s[len]=line.substr(last,(int)line.size()-last);
 		if(instr.find(s[0])==instr.end()){
-			cout<<"Command not found!!";
+			cout<<"Command not found!!\n";
 			continue;
 		}
 
@@ -107,21 +111,102 @@ int main(int argc, char const *argv[]){
 						}
 					}
 					break;
-			case 4: if(len==1)s[1]="untitled";
+			case 4: {
+						if(len==1)s[1]="untitled";
+						if(mp.find(s[1])==mp.end()){
+							cout<<"File doesn't exists.";
+							break;
+						}
+						if(!mark[mp[s[1]]]){
+							cout<<"ERROR:File not opened.";
+							break;
+						}
+						cout<<"Enter the data(terminate by printing '.') :-\n";
+						getline(cin,line,'.');
+						if(data[mp[s[1]]]){
+							char *temp_s=(char *)v[mp[s[1]]].direct_p[0];
+							while(temp_s[0]!='\0')
+								temp_s++;
+							strcpy(temp_s,line.c_str());
+						}
+						else{
+							strcpy((char *)v[mp[s[1]]].direct_p[0],line.c_str());
+							data[mp[s[1]]]=1;	
+						}
+						time_t tt=time(0);
+						v[mp[s[1]]].modified=tt;
+						v[mp[s[1]]].written=tt;
+						inode_manager::inode_write(mm,v[mp[s[1]]]);
+						break;
+					}	
+			case 5: {
+						if(len==1)s[1]="untitled";
+						if(mp.find(s[1])==mp.end()){
+							cout<<"File doesn't exists.";
+							break;
+						}
+						if(!mark[mp[s[1]]]){
+							cout<<"ERROR:File not opened.";
+							break;
+						}
+						if(!data[mp[s[1]]]){
+							break;
+						}
+						char *temp_s=(char *)v[mp[s[1]]].direct_p[0];
+						for(int i=0;temp_s[i]!='\0';i++)
+							cout<<temp_s[i];
+						break;
+					}
+			case 6:	if(len==1)s[1]="untitled";
+					if(mp.find(s[1])==mp.end()){
+							cout<<"File doesn't exists.";
+							break;
+						}
 					if(!mark[mp[s[1]]]){
 						cout<<"ERROR:File not opened.";
 						break;
 					}
-					cout<<"Enter the data(terminate by printing -1) :-\n";
+					cout<<"Enter the data(terminate by printing '.') :-\n";
 					getline(cin,line,'.');
 					strcpy((char *)v[mp[s[1]]].direct_p[0],line.c_str());
+					data[mp[s[1]]]=1;
+					v[mp[s[1]]].modified=time(0);
+					v[mp[s[1]]].written=time(0);
+					inode_manager::inode_write(mm,v[mp[s[1]]]);
 					break;
-			case 5: cout<<"Exiting........";
+			case 7: if(len==1)s[1]="untitled";
+					if(mp.find(s[1])==mp.end()){
+						cout<<"File doesn't exists.";
+						break;
+					}
+					if(!mark[mp[s[1]]]){
+						cout<<"ERROR:File not opened.";
+						break;
+					}
+					node=v[mp[s[1]]];
+					print();
+					break;
+			case 8:	if(len==1)s[1]="untitled";
+					if(mp.find(s[1])==mp.end()){
+						cout<<"File doesn't exists.";
+						break;
+					}
+					if(mark[mp[s[1]]]){
+						cout<<"File is currently opened.Close it first.";
+						break;
+					}
+					mark[mp[s[1]]]=0;
+					data[mp[s[1]]]=0;
+					delete_file(mm,mp[s[1]]);
+					mp.erase(s[1]);
+					cout<<"File successfully deleted.";
+					break;
+			case 9: cout<<"Exiting........";
 					break;
 			default:cout<<"Wrong Command";
 		}
-		cout<<endl;
-		if(instr[s[0]]==5)break;
+		cout<<endl<<endl;
+		if(instr[s[0]]==9)break;
 	}
 	free(mm);
 	return 0;
