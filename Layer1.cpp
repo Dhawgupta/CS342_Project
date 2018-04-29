@@ -212,21 +212,53 @@ void bitmap_manager::write_inode_bitmap(void *memory_location, bool *bitmap) {
 
 }
 
-void bitmap_manager::write_data_bitmap(void *memory_location, bool *bitmap) {
-    // read superblock
-    superblock sb = superblock::read_superblock_fs(memory_location);
+void bitmap_manager::write_data_bitmap(void *memory_location, bool
+*bitmap) {     // read superblock     superblock sb =
+superblock::read_superblock_fs(memory_location);
 
-    // we will correct the memory size mismatch
-    bool* temp_block = (bool *)malloc(BLOCK_SIZE);
-    memcpy(temp_block, bitmap, sb.data_blocks);
+    // we will correct the memory size mismatch     bool* temp_block =
+(bool *)malloc(BLOCK_SIZE);     memcpy(temp_block, bitmap,
+sb.data_blocks);
 
 
-    // wrote it to temp_block
-    // write the block to scondary storage
-    write_block(memory_location,sb.first_data_block,temp_block);
+    // wrote it to temp_block     // write the block to scondary
+storage
+write_block(memory_location,sb.first_data_block,temp_block);
 
     free(temp_block);
 
-    return ;
+    return ; }
+
+
+int directory::give_index(string file_name){
+    for(int i=0;i<(int)table.size();i++){
+        if(v[i].file_name==file_name){
+            return v[i].inode_number;
+        }
+    }
+    return -1;
+}
+
+int directory::new_entry(void *memory_location,string file_name){
+    int empty_index,empty_data;
+    empty_data=empty_index=-1;
+    
+    bool *temp_block=bitmap_manager::read_inode_bitmap(memory_location+BLOCK_SIZE);
+    for(int i=0;i<BLOCK_SIZE;i++)
+        if(temp_block[i]==false){
+            empty_index=i;
+            break;
+        }
+    
+    bool *temp_block=bitmap_manager::read_data_bitmap(memory_location+2*BLOCK_SIZE);
+    for(int i=0;i<BLOCK_SIZE;i++)
+        if(temp_block[i]==false){
+            empty_data=i;
+            break;
+        }
+    if(empty_index==-1 or empty_data==-1)
+        return -1;
+    
+    dir_entry et = dir_entry(name,empty_index);
 
 }

@@ -26,8 +26,8 @@ int read_block(void* memory,int block,void * buf){
         return 0;
     else
         return -1;
-
 }
+
 int write_block(void* memory, int block, void * buf){
     void *block_location =(void *)((char *)memory + block*BLOCK_SIZE);
     void *newbuf = memcpy(block_location,buf,BLOCK_SIZE); // copy one block worth of memory from the destined location
