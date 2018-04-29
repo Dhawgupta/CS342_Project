@@ -170,34 +170,4 @@ public:
 
 };
 
-class dir_entry{
-public:
-    string file_name;
-    int inode_number;
-    dir_entry(string name, int id){
-        file_name=name;
-        inode_number=number;
-    }
-}
-
-class directory{
-public:
-    vector<dir_entry> table;
-
-/*  *gives the index of the block which is associated with the path
-    *otherwise gives -1
-*/
-    static int give_index(string file_name);
-/*
-    *records new entry in the directory table
-    *if space not available returns -1
-*/
-    static int new_entry(string file_name);
-/*
-    *removes entry from the table if it exists,
-    *otherwise returns -1
-*/
-    static int rem_entry(string file_name);
-}
-
 #endif //CS342_PROJECT_LAYER1_H
