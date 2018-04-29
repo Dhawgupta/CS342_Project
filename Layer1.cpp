@@ -137,7 +137,6 @@ inode_struct inode_manager::inode_read(void*memory_location,int node_number){
     int relative_inode_on_block = node_number - relative_block_number*sb.inode_per_block;
 
     inode_struct inode = temp_block[relative_inode_on_block];
-
     return inode;
 
 
@@ -212,20 +211,19 @@ void bitmap_manager::write_inode_bitmap(void *memory_location, bool *bitmap) {
 
 }
 
-void bitmap_manager::write_data_bitmap(void *memory_location, bool
-*bitmap) {     // read superblock     superblock sb =
-superblock::read_superblock_fs(memory_location);
+void bitmap_manager::write_data_bitmap(void *memory_location, bool *bitmap) {     
+    // read superblock     
+    superblock sb = superblock::read_superblock_fs(memory_location);
 
-    // we will correct the memory size mismatch     bool* temp_block =
-(bool *)malloc(BLOCK_SIZE);     memcpy(temp_block, bitmap,
-sb.data_blocks);
+    // we will correct the memory size mismatch     
+    bool* temp_block =(bool *)malloc(BLOCK_SIZE);     
+    memcpy(temp_block, bitmap,sb.data_blocks);
 
-
-    // wrote it to temp_block     // write the block to scondary
-storage
-write_block(memory_location,sb.first_data_block,temp_block);
+    // wrote it to temp_block     // write the block to scondary storage
+    write_block(memory_location,sb.first_data_block,temp_block);
 
     free(temp_block);
 
-    return ; }
+    return ; 
+}
 
