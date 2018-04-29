@@ -229,12 +229,3 @@ write_block(memory_location,sb.first_data_block,temp_block);
 
     return ; }
 
-
-int directory::give_index(string file_name){
-    for(int i=0;i<(int)table.size();i++){
-        if(v[i].file_name==file_name){
-            return v[i].inode_number;
-        }
-    }
-    return -1;
-}

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdint.h>
 #include <string.h>
+#include <time.h>
 using namespace std;
 
 int createfile(void *memory_location,string name){
@@ -27,7 +28,7 @@ int createfile(void *memory_location,string name){
 	}
 	if(index_id==-1 || data_id==-1)
 		return -1;
-
+	offset=sb.data_bitmap_block+1;
 	inode_struct iblock=inode_manager::inode_read(memory_location,index_id);
 	iblock.inode=index_id;
 	iblock.file_type=0;
@@ -35,5 +36,6 @@ int createfile(void *memory_location,string name){
 	iblock.nlinks=1;
 	iblock.block_size=BLOCK_SIZE;
 	iblock.blocks=1;
-	iblock.direct_p[0]=
+	iblock.direct_p[0]=(void*)((char *)memory_location+offset*BLOCK_SIZE);
+	iblock.created=iblock.modeified=iblock.written=time(0);
 }
