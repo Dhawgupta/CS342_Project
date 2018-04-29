@@ -38,4 +38,9 @@ int createfile(void *memory_location,string name){
 	iblock.blocks=1;
 	iblock.direct_p[0]=(void*)((char *)memory_location+offset*BLOCK_SIZE);
 	iblock.created=iblock.modeified=iblock.written=time(0);
+	return index_id;
+}
+inode_struct fileopen(void *memory_location,int index_id){	
+	inode_struct iblock=inode_manager::inode_read(memory_location,index_id);
+	return iblock;
 }
